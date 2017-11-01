@@ -1,0 +1,41 @@
+{
+    "name": "botman/driver-twilio",
+    "license": "MIT",
+    "description": "Twilio driver for BotMan",
+    "keywords": [
+        "Bot",
+        "BotMan",
+        "Twilio"
+    ],
+    "homepage": "http://github.com/botman/driver-twilio",
+    "authors": [
+        {
+            "name": "Marcel Pociot",
+            "email": "m.pociot@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "botman/botman": "~2.0",
+        "twilio/sdk": "^5.15"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.0",
+        "mockery/mockery": "dev-master",
+        "ext-curl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "BotMan\\Drivers\\Twilio\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "cs": "php-cs-fixer fix"
+    }
+}

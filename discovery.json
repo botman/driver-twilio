@@ -1,0 +1,9 @@
+{
+    "botman/driver-config": [
+        "stubs/twilio.php"
+    ],
+    "botman/driver": [
+        "BotMan\\Drivers\\Twilio\\TwilioVoiceDriver",
+        "BotMan\\Drivers\\Twilio\\TwilioMessageDriver"
+    ]
+}
