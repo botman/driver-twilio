@@ -6,6 +6,7 @@ use Mockery as m;
 use Twilio\Twiml;
 use BotMan\BotMan\Http\Curl;
 use PHPUnit_Framework_TestCase;
+use BotMan\BotMan\Messages\Attachments\Image;
 use BotMan\BotMan\Messages\Outgoing\Question;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -230,6 +231,21 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
         /** @var Response $response */
         $response = $driver->sendPayload($payload);
         $expected = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<Response><Message><Body>This is a question'.PHP_EOL.'Button 1'.PHP_EOL.'Button 2</Body></Message></Response>'.PHP_EOL;
+        $this->assertSame($expected, $response->getContent());
+    }
+
+    /** @test */
+    public function it_can_send_image_attachments()
+    {
+        $driver = $this->getValidDriver();
+
+        $message = OutgoingMessage::create('This has an attachment')->withAttachment(Image::url('https://botman.io/img/logo.png'));
+
+        $payload = $driver->buildServicePayload($message, new IncomingMessage('', '', ''), []);
+
+        /** @var Response $response */
+        $response = $driver->sendPayload($payload);
+        $expected = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<Response><Message><Body>This has an attachment</Body><Media>https://botman.io/img/logo.png</Media></Message></Response>'.PHP_EOL;
         $this->assertSame($expected, $response->getContent());
     }
 

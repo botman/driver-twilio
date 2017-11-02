@@ -2,6 +2,8 @@
 
 namespace BotMan\Drivers\Twilio;
 
+use BotMan\BotMan\Messages\Attachments\Image;
+use BotMan\BotMan\Messages\Attachments\Location;
 use Twilio\Twiml;
 use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\BotMan\Messages\Outgoing\Question;
@@ -81,7 +83,11 @@ class TwilioMessageDriver extends TwilioDriver
         } elseif ($message instanceof Twiml) {
             $parameters['twiml'] = $message;
         } elseif ($message instanceof OutgoingMessage) {
+            $attachment = $message->getAttachment();
             $text = $message->getText();
+            if ($attachment instanceof Location === false && !is_null($attachment)) {
+                $parameters['media'] = $attachment->getUrl();
+            }
         } else {
             $text = $message;
         }
@@ -110,6 +116,9 @@ class TwilioMessageDriver extends TwilioDriver
             $body .= "\n".$button['text'];
         }
         $message->body($body);
+        if (isset($payload['media'])) {
+            $message->media($payload['media']);
+        }
 
         return Response::create((string)$response)->send();
     }
