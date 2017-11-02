@@ -110,8 +110,8 @@ class TwilioVoiceDriver extends TwilioDriver
         }
 
         $sayParameters = [
-            'voice' => $this->config->get('voice'),
-            'language' => $this->config->get('language'),
+            'voice' => $this->config->get('voice', TwilioSettings::VOICE_MAN),
+            'language' => $this->config->get('language', 'en'),
         ];
         if (isset($payload['voice'])) {
             $sayParameters['voice'] = $payload['voice'];
@@ -122,7 +122,7 @@ class TwilioVoiceDriver extends TwilioDriver
 
         $response = new Twiml();
         if ($payload['question'] === true) {
-            $input = $payload['input'] ?? TwilioSettings::INPUT_DTMF;
+            $input = $payload['input'] ?? $this->config->get('input', TwilioSettings::INPUT_DTMF);
             $gather = $response->gather(['input' => $input]);
             $gather->say($payload['text'], $sayParameters);
             foreach ((array) $payload['buttons'] as $button) {

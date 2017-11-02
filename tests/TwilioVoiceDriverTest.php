@@ -194,7 +194,7 @@ class TwilioVoiceDriverTest extends PHPUnit_Framework_TestCase
 
         /** @var Response $response */
         $response = $driver->sendPayload($payload);
-        $expected = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<Response><Say voice="" language="">string</Say></Response>'.PHP_EOL;
+        $expected = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<Response><Say voice="man" language="en">string</Say></Response>'.PHP_EOL;
         $this->assertSame($expected, $response->getContent());
     }
 
@@ -207,7 +207,7 @@ class TwilioVoiceDriverTest extends PHPUnit_Framework_TestCase
 
         /** @var Response $response */
         $response = $driver->sendPayload($payload);
-        $expected = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<Response><Say voice="" language="">string</Say></Response>'.PHP_EOL;
+        $expected = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<Response><Say voice="man" language="en">string</Say></Response>'.PHP_EOL;
         $this->assertSame($expected, $response->getContent());
     }
 
@@ -241,7 +241,7 @@ class TwilioVoiceDriverTest extends PHPUnit_Framework_TestCase
 
         /** @var Response $response */
         $response = $driver->sendPayload($payload);
-        $expected = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<Response><Gather input="dtmf"><Say voice="" language="">This is a question</Say><Say voice="" language="">Button 1</Say><Say voice="" language="">Button 2</Say></Gather></Response>'.PHP_EOL;
+        $expected = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<Response><Gather input="dtmf"><Say voice="man" language="en">This is a question</Say><Say voice="man" language="en">Button 1</Say><Say voice="man" language="en">Button 2</Say></Gather></Response>'.PHP_EOL;
         $this->assertSame($expected, $response->getContent());
     }
 
