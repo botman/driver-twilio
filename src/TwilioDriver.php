@@ -11,7 +11,6 @@ use BotMan\BotMan\Messages\Incoming\IncomingMessage;
 
 abstract class TwilioDriver extends HttpDriver
 {
-
     /** @var array */
     protected $messages = [];
 
@@ -48,6 +47,7 @@ abstract class TwilioDriver extends HttpDriver
     protected function isSignatureValid()
     {
         $validator = new RequestValidator($this->config->get('token'));
+
         return $validator->validate($this->signature, $this->requestUri, $this->payload);
     }
 
