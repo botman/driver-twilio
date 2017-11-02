@@ -2,13 +2,11 @@
 
 namespace BotMan\Drivers\Twilio;
 
-use BotMan\BotMan\Messages\Attachments\Image;
-use BotMan\BotMan\Messages\Attachments\Location;
 use Twilio\Twiml;
 use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\BotMan\Messages\Outgoing\Question;
-use BotMan\BotMan\Drivers\Events\GenericEvent;
 use Symfony\Component\HttpFoundation\Response;
+use BotMan\BotMan\Messages\Attachments\Location;
 use BotMan\BotMan\Interfaces\DriverEventInterface;
 use BotMan\BotMan\Messages\Incoming\IncomingMessage;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
@@ -47,7 +45,6 @@ class TwilioMessageDriver extends TwilioDriver
     public function getMessages()
     {
         if (empty($this->messages)) {
-
             $message = new IncomingMessage($this->event->get('Body'), $this->event->get('MessageSid'), $this->event->get('To'));
 
             $this->messages = [$message];
@@ -85,7 +82,7 @@ class TwilioMessageDriver extends TwilioDriver
         } elseif ($message instanceof OutgoingMessage) {
             $attachment = $message->getAttachment();
             $text = $message->getText();
-            if ($attachment instanceof Location === false && !is_null($attachment)) {
+            if ($attachment instanceof Location === false && ! is_null($attachment)) {
                 $parameters['media'] = $attachment->getUrl();
             }
         } else {
@@ -104,7 +101,7 @@ class TwilioMessageDriver extends TwilioDriver
     public function sendPayload($payload)
     {
         if (isset($payload['twiml'])) {
-            return Response::create((string)$payload['twiml'])->send();
+            return Response::create((string) $payload['twiml'])->send();
         }
 
         $response = new Twiml();
@@ -112,7 +109,7 @@ class TwilioMessageDriver extends TwilioDriver
 
         $body = $payload['text'];
 
-        foreach ((array)$payload['buttons'] as $button) {
+        foreach ((array) $payload['buttons'] as $button) {
             $body .= "\n".$button['text'];
         }
         $message->body($body);
@@ -120,6 +117,6 @@ class TwilioMessageDriver extends TwilioDriver
             $message->media($payload['media']);
         }
 
-        return Response::create((string)$response)->send();
+        return Response::create((string) $response)->send();
     }
 }

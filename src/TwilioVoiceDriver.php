@@ -46,7 +46,6 @@ class TwilioVoiceDriver extends TwilioDriver
     public function getMessages()
     {
         if (empty($this->messages)) {
-
             $message = new IncomingMessage($this->event->get('Digits'), $this->event->get('CallSid'), $this->event->get('To'));
 
             $this->messages = [$message];
@@ -107,12 +106,12 @@ class TwilioVoiceDriver extends TwilioDriver
     public function sendPayload($payload)
     {
         if (isset($payload['twiml'])) {
-            return Response::create((string)$payload['twiml'])->send();
+            return Response::create((string) $payload['twiml'])->send();
         }
 
         $sayParameters = [
             'voice' => $this->config->get('voice'),
-            'language' => $this->config->get('language')
+            'language' => $this->config->get('language'),
         ];
         if (isset($payload['voice'])) {
             $sayParameters['voice'] = $payload['voice'];
@@ -126,13 +125,13 @@ class TwilioVoiceDriver extends TwilioDriver
             $input = $payload['input'] ?? TwilioSettings::INPUT_DTMF;
             $gather = $response->gather(['input' => $input]);
             $gather->say($payload['text'], $sayParameters);
-            foreach ((array)$payload['buttons'] as $button) {
+            foreach ((array) $payload['buttons'] as $button) {
                 $gather->say($button['text'], $sayParameters);
             }
         } else {
             $response->say($payload['text'], $sayParameters);
         }
 
-        return Response::create((string)$response)->send();
+        return Response::create((string) $response)->send();
     }
 }

@@ -9,8 +9,8 @@ use PHPUnit_Framework_TestCase;
 use BotMan\BotMan\Messages\Attachments\Image;
 use BotMan\BotMan\Messages\Outgoing\Question;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use BotMan\Drivers\Twilio\TwilioMessageDriver;
+use Symfony\Component\HttpFoundation\Response;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use BotMan\BotMan\Messages\Incoming\IncomingMessage;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
@@ -20,7 +20,7 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
     private function getDriver($parameters = [], $htmlInterface = null)
     {
         $request = Request::create('', 'POST', $parameters, [], [], [
-            'Content-Type' => 'application/x-ww-form-urlencoded'
+            'Content-Type' => 'application/x-ww-form-urlencoded',
         ]);
         $request->headers->set('X-Twilio-Signature', 'Lo3nfTHrzZ2sr2daOkmKFA9Ce0w=');
         if ($htmlInterface === null) {
@@ -60,6 +60,7 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
             'Direction' => 'inbound',
             'ApiVersion' => '2010-04-01',
         ];
+
         return $this->getDriver($parameters, $htmlInterface);
     }
 
@@ -223,7 +224,7 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
 
         $question = Question::create('This is a question')->addButtons([
             Button::create('Button 1')->value('1'),
-            Button::create('Button 2')->value('2')
+            Button::create('Button 2')->value('2'),
         ]);
 
         $payload = $driver->buildServicePayload($question, new IncomingMessage('', '', ''), []);

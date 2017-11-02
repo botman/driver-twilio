@@ -6,10 +6,10 @@ use Mockery as m;
 use Twilio\Twiml;
 use BotMan\BotMan\Http\Curl;
 use PHPUnit_Framework_TestCase;
+use BotMan\Drivers\Twilio\TwilioVoiceDriver;
 use BotMan\BotMan\Messages\Outgoing\Question;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use BotMan\Drivers\Twilio\TwilioVoiceDriver;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use BotMan\BotMan\Messages\Incoming\IncomingMessage;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
@@ -19,7 +19,7 @@ class TwilioVoiceDriverTest extends PHPUnit_Framework_TestCase
     private function getDriver($parameters = [], $htmlInterface = null)
     {
         $request = Request::create('', 'POST', $parameters, [], [], [
-            'Content-Type' => 'application/x-ww-form-urlencoded'
+            'Content-Type' => 'application/x-ww-form-urlencoded',
         ]);
         $request->headers->set('X-Twilio-Signature', '+vqR5LqFQepeHnZIFIuq4jID2ws=');
         if ($htmlInterface === null) {
@@ -61,6 +61,7 @@ class TwilioVoiceDriverTest extends PHPUnit_Framework_TestCase
         if ($withDigits === true) {
             $parameters['Digits'] = '1';
         }
+
         return $this->getDriver($parameters, $htmlInterface);
     }
 
@@ -188,7 +189,7 @@ class TwilioVoiceDriverTest extends PHPUnit_Framework_TestCase
 
         $payload = [
             'text' => 'string',
-            'question' => false
+            'question' => false,
         ];
 
         /** @var Response $response */
@@ -233,7 +234,7 @@ class TwilioVoiceDriverTest extends PHPUnit_Framework_TestCase
 
         $question = Question::create('This is a question')->addButtons([
             Button::create('Button 1')->value('1'),
-            Button::create('Button 2')->value('2')
+            Button::create('Button 2')->value('2'),
         ]);
 
         $payload = $driver->buildServicePayload($question, new IncomingMessage('', '', ''), []);

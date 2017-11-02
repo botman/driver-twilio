@@ -49,5 +49,5 @@ return [
     | See: https://www.twilio.com/docs/api/twiml/gather#attributes-input
     |
     */
-    'input' => \BotMan\Drivers\Twilio\TwilioSettings::INPUT_DTMF
+    'input' => \BotMan\Drivers\Twilio\TwilioSettings::INPUT_DTMF,
 ];
