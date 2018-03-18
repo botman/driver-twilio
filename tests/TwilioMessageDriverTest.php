@@ -108,7 +108,7 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
     public function it_returns_the_user_id()
     {
         $driver = $this->getValidDriver();
-        $this->assertSame('CA69d45cb4f204d9e790f24e0151e90fa9', $driver->getMessages()[0]->getSender());
+        $this->assertSame('+431234567890', $driver->getMessages()[0]->getSender());
     }
 
     /** @test */
@@ -126,7 +126,7 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
         $message = $driver->getMessages()[0];
         $user = $driver->getUser($message);
 
-        $this->assertSame($user->getId(), 'CA69d45cb4f204d9e790f24e0151e90fa9');
+        $this->assertSame($user->getId(), '+431234567890');
         $this->assertNull($user->getFirstName());
         $this->assertNull($user->getLastName());
         $this->assertNull($user->getUsername());
