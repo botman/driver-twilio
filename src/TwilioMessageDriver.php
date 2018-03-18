@@ -45,7 +45,7 @@ class TwilioMessageDriver extends TwilioDriver
     public function getMessages()
     {
         if (empty($this->messages)) {
-            $message = new IncomingMessage($this->event->get('Body'), $this->event->get('MessageSid'), $this->event->get('To'));
+            $message = new IncomingMessage($this->event->get('Body'), $this->event->get('From'), $this->event->get('To'));
 
             $this->messages = [$message];
         }
