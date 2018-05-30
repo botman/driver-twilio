@@ -3,6 +3,7 @@
 namespace BotMan\Drivers\Twilio;
 
 use BotMan\BotMan\Users\User;
+use Twilio\Rest\Client as Twilio;
 use Illuminate\Support\Collection;
 use BotMan\BotMan\Drivers\HttpDriver;
 use Twilio\Security\RequestValidator;
@@ -19,6 +20,9 @@ abstract class TwilioDriver extends HttpDriver
 
     /** @var string */
     protected $signature;
+
+    /** @var Twilio */
+    protected $client;
 
     /**
      * @param Request $request
@@ -39,6 +43,14 @@ abstract class TwilioDriver extends HttpDriver
     public function getUser(IncomingMessage $matchingMessage)
     {
         return new User($matchingMessage->getSender());
+    }
+
+    /**
+     * @param Twilio $client
+     */
+    public function setClient(Twilio $client)
+    {
+        $this->client = $client;
     }
 
     /**

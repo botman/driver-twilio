@@ -3,6 +3,7 @@
 namespace BotMan\Drivers\Twilio;
 
 use Twilio\Twiml;
+use Twilio\Rest\Client as Twilio;
 use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\BotMan\Messages\Outgoing\Question;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,6 +73,8 @@ class TwilioMessageDriver extends TwilioDriver
         $parameters = $additionalParameters;
         $text = '';
 
+        $parameters['originate'] = $matchingMessage->getRecipient() === '';
+        $parameters['recipient'] = $matchingMessage->getSender();
         $parameters['buttons'] = [];
 
         if ($message instanceof Question) {
@@ -97,11 +100,31 @@ class TwilioMessageDriver extends TwilioDriver
     /**
      * @param mixed $payload
      * @return Response
+     * @throws \Twilio\Rest\Api\V2010\Account\TwilioException
      */
     public function sendPayload($payload)
     {
         if (isset($payload['twiml'])) {
             return Response::create((string) $payload['twiml'])->send();
+        }
+
+        if (isset($payload['originate']) && $payload['originate'] === true) {
+            if (! $this->client) {
+                $this->client = new Twilio($this->config->get('sid'), $this->config->get('token'));
+            }
+
+            $originatePayload = [
+                'from' => $this->config->get('fromNumber'),
+                'body' => $payload['text']
+            ];
+
+            if (isset($payload['media'])) {
+                $originatePayload ['mediaUrl'] = $payload['media'];
+            }
+
+            $message = $this->client->messages->create($payload['recipient'], $originatePayload);
+
+            return Response::create(json_encode($message->toArray()));
         }
 
         $response = new Twiml();

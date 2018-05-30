@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Mockery as m;
+use Twilio\Rest\Client;
 use Twilio\Twiml;
 use BotMan\BotMan\Http\Curl;
 use PHPUnit_Framework_TestCase;
@@ -27,7 +28,11 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
             $htmlInterface = m::mock(Curl::class);
         }
 
-        return new TwilioMessageDriver($request, [], $htmlInterface);
+        return new TwilioMessageDriver($request, [
+            'twilio' => [
+                'fromNumber' => 'My-From-Number'
+            ]
+        ], $htmlInterface);
     }
 
     private function getValidDriver($htmlInterface = null)
@@ -144,12 +149,26 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
     {
         $driver = $this->getValidDriver();
 
+        $incomingMessage = new IncomingMessage('text', '123456', '');
+
+        $message = 'string';
+        $payload = $driver->buildServicePayload($message, $incomingMessage);
+
+        $this->assertSame([
+            'originate' => true,
+            'recipient' => '123456',
+            'buttons' => [],
+            'text' => 'string',
+        ], $payload);
+
         $incomingMessage = new IncomingMessage('text', '123456', '987654');
 
         $message = 'string';
         $payload = $driver->buildServicePayload($message, $incomingMessage);
 
         $this->assertSame([
+            'originate' => false,
+            'recipient' => '123456',
             'buttons' => [],
             'text' => 'string',
         ], $payload);
@@ -158,6 +177,8 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
         $payload = $driver->buildServicePayload($message, $incomingMessage);
 
         $this->assertSame([
+            'originate' => false,
+            'recipient' => '123456',
             'buttons' => [],
             'text' => 'message object',
         ], $payload);
@@ -166,6 +187,8 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
         $payload = $driver->buildServicePayload($message, $incomingMessage);
 
         $this->assertSame([
+            'originate' => false,
+            'recipient' => '123456',
             'buttons' => [],
             'text' => 'question object',
         ], $payload);
@@ -192,12 +215,39 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
     {
         $driver = $this->getValidDriver();
 
-        $payload = $driver->buildServicePayload('string', new IncomingMessage('', '', ''), []);
+        $payload = $driver->buildServicePayload('string', new IncomingMessage('', '123', '456'), []);
 
         /** @var Response $response */
         $response = $driver->sendPayload($payload);
         $expected = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL.'<Response><Message><Body>string</Body></Message></Response>'.PHP_EOL;
         $this->assertSame($expected, $response->getContent());
+    }
+
+    /** @test */
+    public function it_can_originate_messages()
+    {
+        $driver = $this->getValidDriver();
+
+        $mock = m::mock(\Twilio\Http\Client::class);
+        $mock
+            ->shouldReceive('request')
+            ->withArgs(function ($method, $url, $params, $data) {
+                return $data === [
+                    'To' => '123',
+                    'From' => 'My-From-Number',
+                    'Body' => 'string'
+                ];
+            })
+            ->andReturn(new \Twilio\Http\Response(200, '{}'));
+
+        $client = new Client('foo', 'bar');
+        $client->setHttpClient($mock);
+
+        $driver->setClient($client);
+
+        $payload = $driver->buildServicePayload('string', new IncomingMessage('', '123', ''), []);
+
+        $driver->sendPayload($payload);
     }
 
     /** @test */
@@ -209,7 +259,7 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
         $message = $twiml->message();
         $message->body('custom twiml');
 
-        $payload = $driver->buildServicePayload($twiml, new IncomingMessage('', '', ''), []);
+        $payload = $driver->buildServicePayload($twiml, new IncomingMessage('', '123', '456'), []);
 
         /** @var Response $response */
         $response = $driver->sendPayload($payload);
@@ -227,7 +277,7 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
             Button::create('Button 2')->value('2'),
         ]);
 
-        $payload = $driver->buildServicePayload($question, new IncomingMessage('', '', ''), []);
+        $payload = $driver->buildServicePayload($question, new IncomingMessage('', '123', '456'), []);
 
         /** @var Response $response */
         $response = $driver->sendPayload($payload);
@@ -242,7 +292,7 @@ class TwilioMessageDriverTest extends PHPUnit_Framework_TestCase
 
         $message = OutgoingMessage::create('This has an attachment')->withAttachment(Image::url('https://botman.io/img/logo.png'));
 
-        $payload = $driver->buildServicePayload($message, new IncomingMessage('', '', ''), []);
+        $payload = $driver->buildServicePayload($message, new IncomingMessage('', '123', '456'), []);
 
         /** @var Response $response */
         $response = $driver->sendPayload($payload);
